@@ -21,7 +21,7 @@ class ShowInstituicoes extends Component
 
     public function mount()
     {
-        $instituicoes = Instituicao::all();
+        $instituicoes = Instituicao::orderBy('nome')->get();
         $this->categorias = $instituicoes->unique('categoria')->map(fn($value) => $value->categoria)->sort()->values()->all();
         $this->paises = $instituicoes->unique('pais')->map(fn($value) => $value->pais)->sort()->values()->all();
         $this->status = 'todas';
@@ -31,7 +31,8 @@ class ShowInstituicoes extends Component
     {
         $query = Instituicao::whereRaw('LOWER(nome) LIKE ?', ['%' . strtolower($this->nome) . '%'])
             ->where('categoria', 'like', '%' . $this->categoria . '%')
-            ->where('pais', 'like', '%' . $this->pais . '%');
+            ->where('pais', 'like', '%' . $this->pais . '%')
+            ->orderBy('nome');
         if ($this->status != 'todas') {
             $query = $query->where('autorizado', $this->status == 'aprovadas');
         }
